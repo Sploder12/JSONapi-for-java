@@ -11,8 +11,8 @@ public class JSON {
 				mapfile = new FileInputStream("Enemies.json");
 				String ses =convertToString(mapfile);
 				int beneb = locateStringEnd(ses,"hp");
-				int[] semes = getInt1DArray(ses,beneb);
-				System.out.println(semes[1]);
+				Boolean semes = getBoolValueOfDict(ses,beneb);
+				System.out.println(semes);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
@@ -52,6 +52,7 @@ public class JSON {
 			return converted;
 			
 		}
+		
 		public int locateStringStart(String string, String wantedString){
 			CharSequence seq = wantedString; 
 		    boolean bool = string.contains(seq);
@@ -103,6 +104,18 @@ public class JSON {
 		}
 		
 		public String getValueOfDict(String jsonFileString, int indexOfEndOfString){
+			return ParseNumDict(jsonFileString, indexOfEndOfString);
+		}
+		
+		public int getIntValueOfDict(String jsonFileString, int indexOfEndOfString){
+			return Integer.parseInt(ParseNumDict(jsonFileString, indexOfEndOfString));
+		}
+		
+		public float getFloatValueOfDict(String jsonFileString, int indexOfEndOfString){
+			return Float.parseFloat(ParseNumDict(jsonFileString, indexOfEndOfString));
+		}
+		
+		private String ParseNumDict(String jsonFileString, int indexOfEndOfString){
 			int indexof = 0;
 			boolean reading = true;
 			char potato[] = new char[45];
@@ -124,102 +137,20 @@ public class JSON {
 			String b = new String(epic);
 			return b;
 		}
-		
-		public int getIntValueOfDict(String jsonFileString, int indexOfEndOfString){
-			int indexof = 0;
-			boolean reading = true;
-			char potato[] = new char[45];
-			while(reading){
-				char check = jsonFileString.charAt(indexOfEndOfString + 2 + indexof);
-				if(check != ' ' && check != ':' && check != '{' && check != '}' && check != '[' && check != ']' && check != '"' && check != ','){
-					potato[indexof] = check;
-					indexof++;
-				}else if (indexof > 0){
-					reading = false;
-				}else if(indexof == 0 && check == ' '){
-					indexOfEndOfString++;
-				}
-			}
-			char epic[] = new char[indexof];
-			for(int x= 0; x < indexof;x++){
-				epic[x] = potato[x];
-			}
-			String b = new String(epic);
-			return Integer.parseInt(b);
-		}
-		
-		public float getFloatValueOfDict(String jsonFileString, int indexOfEndOfString){
-			int indexof = 0;
-			boolean reading = true;
-			char potato[] = new char[45];
-			while(reading){
-				char check = jsonFileString.charAt(indexOfEndOfString + 2 + indexof);
-				if(check != ' ' && check != ':' && check != '{' && check != '}' && check != '[' && check != ']' && check != '"' && check != ','){
-					potato[indexof] = check;
-					indexof++;
-				}else if (indexof > 0){
-					reading = false;
-				}else if(indexof == 0 && check == ' '){
-					indexOfEndOfString++;
-				}
-			}
-			char epic[] = new char[indexof];
-			for(int x= 0; x < indexof;x++){
-				epic[x] = potato[x];
-			}
-			String b = new String(epic);
-			return Float.parseFloat(b);
-		}
-		
+	
 		public double getDoubleValueOfDict(String jsonFileString, int indexOfEndOfString){
-			int indexof = 0;
-			boolean reading = true;
-			char potato[] = new char[45];
-			while(reading){
-				char check = jsonFileString.charAt(indexOfEndOfString + 2 + indexof);
-				if(check != ' ' && check != ':' && check != '{' && check != '}' && check != '[' && check != ']' && check != '"' && check != ','){
-					potato[indexof] = check;
-					indexof++;
-				}else if (indexof > 0){
-					reading = false;
-				}else if(indexof == 0 && check == ' '){
-					indexOfEndOfString++;
-				}
-			}
-			char epic[] = new char[indexof];
-			for(int x= 0; x < indexof;x++){
-				epic[x] = potato[x];
-			}
-			String b = new String(epic);
-			return Double.parseDouble(b);
+			return Double.parseDouble(ParseNumDict(jsonFileString, indexOfEndOfString));
 		}
 		
 		public boolean getBoolValueOfDict(String jsonFileString, int indexOfEndOfString){
-			int indexof = 0;
-			boolean reading = true;
-			char potato[] = new char[45];
-			while(reading){
-				char check = jsonFileString.charAt(indexOfEndOfString + 2 + indexof);
-				if(check != ' ' && check != ':' && check != '{' && check != '}' && check != '[' && check != ']' && check != '"'){
-					potato[indexof] = check;
-					indexof++;
-				}else if (indexof > 0){
-					reading = false;
-				}else if(indexof == 0 && check == ' '){
-					indexOfEndOfString++;
-				}
-			}
-			char epic[] = new char[indexof];
-			for(int x= 0; x < indexof;x++){
-				epic[x] = potato[x];
-			}
-			String b = new String(epic);
-			if(b.equalsIgnoreCase("true") || b.equalsIgnoreCase("false")){
-				return Boolean.parseBoolean(b);
+			boolean value = false;
+			String check = ParseNumDict(jsonFileString, indexOfEndOfString);
+			if(!check.equalsIgnoreCase("true") && !check.equalsIgnoreCase("false")){
+				System.out.println("Returned False Because Value Couldn't Be Parsed To Boolean");
 			}else{
-				System.out.println("Could Not Parse Bool");
-				return false;
+				value =Boolean.parseBoolean(ParseNumDict(jsonFileString, indexOfEndOfString));
 			}
+			return value;
 		}
 		
 		public char getCharValueOfDict(String jsonFileString, int indexOfEndOfString){
@@ -238,50 +169,14 @@ public class JSON {
 		}
 		
 		public String[] getString1DArray(String jsonFileString, int indexOfEndOfString){
-			boolean reading = true;
-			int Stringnum = 0;
-			int index = 0;
-			String[] bob = new String[25];
-			char[][] chararray = new char[25][45];
-			while(reading){
-				char check = jsonFileString.charAt(indexOfEndOfString + 2 + index);
-				if(check != '}' && check != '[' && check != ']'){
-					System.out.println(check);
-					if(check == ','){
-						Stringnum++;
-						indexOfEndOfString += (index+1);
-						index = 0;
-					}else if(check == '{'){
-						indexOfEndOfString++;
-					}else{
-						chararray[Stringnum][index] = check;
-						index++;
-					}
-				}else if(check == '}'){
-					reading = false;
-				}				
-			}
-			char epic[][] = new char[Stringnum+1][index+1];
-			for(int y = 0; y < Stringnum; y++){
-				for(int z= 0; z < index;z++){
-					epic[y][z] = chararray[y][z];
-				}
-			}
-			for(int x=0;x <= Stringnum; x++){
-				
-				String b = new String(epic[x]);
-				bob[x] = b;
-			}
-			return bob;
+			return parseArray(jsonFileString, indexOfEndOfString);
 		}
 		
-		public int[] getInt1DArray(String jsonFileString, int indexOfEndOfString){
+		private String[] parseArray(String jsonFileString, int indexOfEndOfString){
 			boolean reading = true;
 			int Stringnum = 0;
 			int index = 0;
-			int[] bob = new int[50];
-			char[][] chararray = new char[50][45];
-			
+			char[][] chararray = new char[50][45]; //maximum size is 50 Strings of 45 characters			
 			while(reading){
 				char check = jsonFileString.charAt(indexOfEndOfString + 2 + index);
 				if(check != '}' && check != '[' && check != ']'){
@@ -300,6 +195,7 @@ public class JSON {
 					reading = false;
 				}
 			}
+			String[] returning = new String[Stringnum+1];
 			for(int stringcur=0;stringcur <= Stringnum; stringcur++){
 				int parselength = 0;
 				for(int indexcopy=0; indexcopy < chararray[stringcur].length; indexcopy++){
@@ -312,68 +208,39 @@ public class JSON {
 					parseprep[copy] = chararray[stringcur][copy];
 				}
 				String parsedstring = new String(parseprep);
-				int parsedvalue = Integer.parseInt(parsedstring);
-				bob[stringcur] = parsedvalue;
+				returning[stringcur] = parsedstring;
 			}
-			return bob;
+			return returning;
+		}
+		
+		public int[] getInt1DArray(String jsonFileString, int indexOfEndOfString){
+			int[] intarray = new int[parseArray(jsonFileString, indexOfEndOfString).length];
+			for(int x = 0; x < intarray.length; x++){ 
+				intarray[x] = Integer.parseInt(parseArray(jsonFileString, indexOfEndOfString)[x]);
+			}
+			return intarray;
 		}
 		
 		
 		public double[] getDouble1DArray(String jsonFileString, int indexOfEndOfString){
-			boolean reading = true;
-			int Stringnum = 0;
-			int index = 0;
-			double[] bob = new double[50];
-			char[][] chararray = new char[50][45];
-			while(reading){
-				char check = jsonFileString.charAt(indexOfEndOfString + 2);
-				if(check !='{' && check != '}' && check != '[' && check != ']'){
-					if(check == ','){
-						Stringnum++;
-					}else{
-						chararray[Stringnum][index] = check;
-						index++;
-					}
-				}else if(check == '}'){
-					reading = false;
-				}				
+			double[] doublearray = new double[parseArray(jsonFileString, indexOfEndOfString).length]; //using .length because null values can't parse
+			for(int x = 0; x < doublearray.length; x++){ 
+				doublearray[x] = Double.parseDouble(parseArray(jsonFileString, indexOfEndOfString)[x]);
 			}
-			for(int x=0;x <= Stringnum; x++){
-				String b = new String(chararray[x]);
-				double q = Double.parseDouble(b);
-				bob[x] = q;
-			}
-			return bob;
+			return doublearray;
 		}
 		
 		public boolean[] getBool1DArray(String jsonFileString, int indexOfEndOfString){
-			boolean reading = true;
-			int Stringnum = 0;
-			int index = 0;
-			boolean[] bob = new boolean[100];
-			char[][] chararray = new char[100][5];
-			while(reading){
-				char check = jsonFileString.charAt(indexOfEndOfString + 2);
-				if(check !='{' && check != '}' && check != '[' && check != ']'){
-					if(check == ','){
-						Stringnum++;
-					}else{
-						chararray[Stringnum][index] = check;
-						index++;
-					}
-				}else if(check == '}'){
-					reading = false;
-				}				
-			}
-			for(int x=0;x <= Stringnum; x++){
-				String b = new String(chararray[x]);
-				if(b.equalsIgnoreCase("true") || b.equalsIgnoreCase("false")){
-					boolean q = Boolean.parseBoolean(b);		
-					bob[x] = q;
+			boolean[] boolarray = new boolean[parseArray(jsonFileString, indexOfEndOfString).length];
+			String[] check = new String[parseArray(jsonFileString, indexOfEndOfString).length];
+			for(int x = 0; x < boolarray.length; x++){ 
+				check[x] = parseArray(jsonFileString, indexOfEndOfString)[x];
+				if(!check[x].equalsIgnoreCase("true") || !check[x].equalsIgnoreCase("false")){
+					System.out.println("Value In Index "+x+" Is False Because It Could Not Be Parsed Correctly");
 				}else{
-					System.out.println("Error:Cannot Parse Non-Boolean Value To Boolean");
+					boolarray[x] = Boolean.parseBoolean(check[x]);
 				}
 			}
-			return bob;
+			return boolarray;
 		}
 }
