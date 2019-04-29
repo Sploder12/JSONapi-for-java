@@ -1,23 +1,51 @@
-{
-  "basic":{
-    "the slime":{
-      "hp":"4",      "atk":1,
-      "def":3
+﻿{
+  "D6":[{
+    "1":{
+      "hp":1,
+      "speed":96,
+      "special":"none"
     },
-    "the goblin":{
-      "hp":7,
-      "atk":1,
-      "def":6
+    "2":{
+      "hp":2,
+      "speed":80,
+      "special":"none"
+    },
+    "3":{
+      "hp":3,
+      "speed":64,
+      "special":"none"
+    },
+    "4":{
+      "hp":4,
+      "speed":48,
+      "special":"none"
+    },
+    "5":{
+      "hp":5,
+      "speed":32,
+      "special":"none"
+    },
+    "6":{
+      "hp":6,
+      "speed":16,
+      "special":"none"
     }
-    
-    
-    
+  }],
+  "D4":{
+    "hp":4,
+    "speed":160,
+    "special":"none"
   },
-  "boss":{
-    "sentientd20":{
-      "hp":20,
-      "atk":10,
-      "def":10
-    }
+  "D8":{
+    "hp":8,
+    "speed":16,
+    "special":"heavy"
+  },
+  "D10":{
+    "hp":10,
+    "speed":48,
+    "special":"transform",
+    "outcome":["D4","D6","D8"]    
   }
+  
 }

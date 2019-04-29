@@ -3,6 +3,7 @@ package sploder12.json;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 public class JSON {
 		public JSON(){
@@ -10,9 +11,9 @@ public class JSON {
 			try {
 				mapfile = new FileInputStream("Enemies.json");
 				String ses =convertToString(mapfile);
-				int beneb = locateStringEnd(ses,"hp");
-				Boolean semes = getBoolValueOfDict(ses,beneb);
-				System.out.println(semes);
+				int[] beneb = findAllIndexOfString(ses,"D10");
+				//String[] semes = getString1DArray(ses,beneb);
+				System.out.println(Arrays.toString(beneb));
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
@@ -22,6 +23,29 @@ public class JSON {
 			new JSON();
 		}
 	
+		public int[] findAllIndexOfString(String string, String wantedString){
+			boolean finding = true;
+			int total = 0;
+			int[] prevIndex = new int[50];
+			while(finding){
+				if(total != 0){
+					prevIndex[total] = locateStringEnd(string,wantedString,prevIndex[total-1]);
+					if(prevIndex[total] < prevIndex[total-1]){
+						finding = false;
+						total -= 2;
+					}
+				}else{
+					prevIndex[0] = locateStringEnd(string,wantedString);
+				}
+				total++;
+			}
+			int[] output = new int[total+1];
+			for(int copy = 0; copy <= total; copy++){
+				output[copy] = prevIndex[copy];
+			}
+			return output;
+		}
+		
 		public String convertToString(InputStream jsonfile){
 			boolean reading = true;
 			String converted = "Oops something went wrong!";
@@ -111,6 +135,10 @@ public class JSON {
 			return Integer.parseInt(ParseNumDict(jsonFileString, indexOfEndOfString));
 		}
 		
+		public byte getByteValueOfDict(String jsonFileString, int indexOfEndOfString){
+			return Byte.parseByte(ParseNumDict(jsonFileString, indexOfEndOfString));
+		}
+		
 		public float getFloatValueOfDict(String jsonFileString, int indexOfEndOfString){
 			return Float.parseFloat(ParseNumDict(jsonFileString, indexOfEndOfString));
 		}
@@ -179,19 +207,19 @@ public class JSON {
 			char[][] chararray = new char[50][45]; //maximum size is 50 Strings of 45 characters			
 			while(reading){
 				char check = jsonFileString.charAt(indexOfEndOfString + 2 + index);
-				if(check != '}' && check != '[' && check != ']'){
+				if(check != '}' && check != ']'){
 					//System.out.println(check);
 					if(check == ','){
 						Stringnum++;
 						indexOfEndOfString +=(index+1);			
 						index = 0;
-					}else if(check == '{'){
+					}else if(check == '{' || check == '['){
 						indexOfEndOfString++;
 					}else{
 						chararray[Stringnum][index] = check;
 						index++;
 					}
-				}else if(check == '}'){
+				}else if(check == '}' || check == ']'){
 					reading = false;
 				}
 			}
@@ -221,6 +249,13 @@ public class JSON {
 			return intarray;
 		}
 		
+		public byte[] getByte1DArray(String jsonFileString, int indexOfEndOfString){
+			byte[] bytearray = new byte[parseArray(jsonFileString, indexOfEndOfString).length];
+			for(int x = 0; x < bytearray.length; x++){ 
+				bytearray[x] = Byte.parseByte(parseArray(jsonFileString, indexOfEndOfString)[x]);
+			}
+			return bytearray;
+		}
 		
 		public double[] getDouble1DArray(String jsonFileString, int indexOfEndOfString){
 			double[] doublearray = new double[parseArray(jsonFileString, indexOfEndOfString).length]; //using .length because null values can't parse
@@ -230,12 +265,21 @@ public class JSON {
 			return doublearray;
 		}
 		
+		public float[] getFloat1DArray(String jsonFileString, int indexOfEndOfString){
+			float[] floatarray = new float[parseArray(jsonFileString, indexOfEndOfString).length]; //using .length because null values can't parse
+			for(int x = 0; x < floatarray.length; x++){ 
+				floatarray[x] = Float.parseFloat(parseArray(jsonFileString, indexOfEndOfString)[x]);
+			}
+			return floatarray;
+		}
+		
 		public boolean[] getBool1DArray(String jsonFileString, int indexOfEndOfString){
 			boolean[] boolarray = new boolean[parseArray(jsonFileString, indexOfEndOfString).length];
 			String[] check = new String[parseArray(jsonFileString, indexOfEndOfString).length];
 			for(int x = 0; x < boolarray.length; x++){ 
 				check[x] = parseArray(jsonFileString, indexOfEndOfString)[x];
-				if(!check[x].equalsIgnoreCase("true") || !check[x].equalsIgnoreCase("false")){
+				//System.out.println(check[x]);
+				if(!check[x].equalsIgnoreCase("true") && !check[x].equalsIgnoreCase("false")){
 					System.out.println("Value In Index "+x+" Is False Because It Could Not Be Parsed Correctly");
 				}else{
 					boolarray[x] = Boolean.parseBoolean(check[x]);
