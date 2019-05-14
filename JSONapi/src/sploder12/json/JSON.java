@@ -2,34 +2,40 @@ package sploder12.json;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.io.File;
 
 public class JSON {
 		public JSON(){
-			InputStream mapfile;
-			try {
-				mapfile = new FileInputStream("Enemies.json");
-				String ses =convertToString(mapfile);
-				int[] beneb = findAllIndexOfString(ses,"D10");
-				//String[] semes = getString1DArray(ses,beneb);
-				System.out.println(Arrays.toString(beneb));
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
+				/*String[] test = {"D6","D10","D8","D4"};
+				*String ses =convertToString("Enemies.json");
+				*int[][] beneb = findAllIndexOfStrings(ses,test);
+				*String[] semes = getString1DArray(ses,beneb);
+				*for(byte x= 0; x < beneb.length; x++){
+				*	System.out.println(Arrays.toString(beneb[x]));
+				}*/
+			String file = convertToString("Enemies.json");
+			int[] test = findAllIndexOfString(file, "D6");
+			System.out.println(Arrays.toString(test));
 		}
+		
 		
 		public static void main(String[]args){
 			new JSON();
 		}
-	
+		
 		public int[] findAllIndexOfString(String string, String wantedString){
 			boolean finding = true;
 			int total = 0;
-			int[] prevIndex = new int[50];
+			int[] prevIndex = new int[70]; //can only find up to 70
 			while(finding){
 				if(total != 0){
 					prevIndex[total] = locateStringEnd(string,wantedString,prevIndex[total-1]);
+					if(locateStringEnd(string,wantedString,prevIndex[total-1]) == -1){
+						finding = false;
+					}
 					if(prevIndex[total] < prevIndex[total-1]){
 						finding = false;
 						total -= 2;
@@ -46,35 +52,70 @@ public class JSON {
 			return output;
 		}
 		
-		public String convertToString(InputStream jsonfile){
-			boolean reading = true;
-			String converted = "Oops something went wrong!";
-			int index = 0;
-			char[] stringchar = new char[500000]; //can only support 250kb files MAX
-			for(int x = 0;x<stringchar.length;x++){
-				stringchar[x] = 'X';
-			}
-			try{
-				while(reading){ 
-					int z = jsonfile.read();
-					if(z > -1){
-						stringchar[index] = (char)z;
-						index++;
-					}else{
-						reading = false;	
+		public int[][] findAllIndexOfStrings(String string, String[] wantedStrings){
+			byte[] total = new byte[wantedStrings.length];
+			int[][] output = new int[wantedStrings.length][];
+			int[][] grossoutput = new int[wantedStrings.length][70]; //can only find up to 70 of each
+			for(int curstring = 0; curstring < wantedStrings.length; curstring++){
+				int[] indexOfCur = findAllIndexOfString(string, wantedStrings[curstring]);
+				for(byte put = 0; put < indexOfCur.length; put++){
+					grossoutput[curstring][put] = indexOfCur[put];
+					if(grossoutput[curstring][put] != 0){
+						total[curstring]++;
 					}
 				}
-				char[] parse = new char[index];
-				for(int x = 0; x < index; x++){
-					parse[x] = stringchar[x]; 
-				}
-				String b = new String(stringchar);
-				converted = b;
-			}catch(Exception e){
-				System.out.println("Failed To Convert To String("+jsonfile+")");
 			}
-			return converted;
-			
+			for(int curstring = 0; curstring < wantedStrings.length; curstring++){
+				output[curstring] = new int[total[curstring]];
+				for(byte copy = 0; copy < total[curstring]; copy++){
+					output[curstring][copy] = grossoutput[curstring][copy];
+					
+				}
+				
+			}
+			return output;
+		}
+		
+		public String convertToString(String filename){
+			try{
+				InputStream file = new FileInputStream(filename);
+				File files = new File(filename);
+				boolean reading = true;
+				String converted = "Oops something went wrong!";
+				int index = 0;
+				char[] stringchar = new char[(int)files.length()]; //can only support 250kb files MAX
+				for(int x = 0;x<stringchar.length;x++){
+					stringchar[x] = 'X';
+				}
+				try{
+					while(reading){ 
+						int z = file.read();
+						if(z > -1){
+							stringchar[index] = (char)z;
+							index++;
+						}else{
+							reading = false;	
+						}
+					}
+					char[] parse = new char[index];
+					for(int x = 0; x < index; x++){
+						parse[x] = stringchar[x]; 
+					}
+					String b = new String(stringchar);
+					converted = b;
+				}catch(Exception e){
+					System.out.println("Failed To Convert To String("+file+")");
+				}
+				try {
+					file.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				return converted;
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+			}
+			return "Cannot convert";
 		}
 		
 		public int locateStringStart(String string, String wantedString){
