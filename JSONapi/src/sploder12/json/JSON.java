@@ -4,32 +4,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.io.File;
 
 public class JSON {
-		public JSON(){
-				/*String[] test = {"D6","D10","D8","D4"};
-				*String ses =convertToString("Enemies.json");
-				*int[][] beneb = findAllIndexOfStrings(ses,test);
-				*String[] semes = getString1DArray(ses,beneb);
-				*for(byte x= 0; x < beneb.length; x++){
-				*	System.out.println(Arrays.toString(beneb[x]));
-				}*/
-			String file = convertToString("Enemies.json");
-			int[] test = findAllIndexOfString(file, "D6");
-			System.out.println(Arrays.toString(test));
-		}
-		
-		
-		public static void main(String[]args){
-			new JSON();
-		}
+
 		
 		public int[] findAllIndexOfString(String string, String wantedString){
 			boolean finding = true;
 			int total = 0;
-			int[] prevIndex = new int[70]; //can only find up to 70
+			int[] prevIndex = new int[100]; //can only find up to 100
 			while(finding){
 				if(total != 0){
 					prevIndex[total] = locateStringEnd(string,wantedString,prevIndex[total-1]);
@@ -238,14 +221,18 @@ public class JSON {
 		}
 		
 		public String[] getString1DArray(String jsonFileString, int indexOfEndOfString){
-			return parseArray(jsonFileString, indexOfEndOfString);
+			return parseArray(jsonFileString, indexOfEndOfString, 5000);
 		}
 		
-		private String[] parseArray(String jsonFileString, int indexOfEndOfString){
+		public String[] getString1DArray(String jsonFileString, int indexOfEndOfString, int length){ //using length is more efficient
+			return parseArray(jsonFileString, indexOfEndOfString, length);
+		}
+		
+		private String[] parseArray(String jsonFileString, int indexOfEndOfString, int length){
 			boolean reading = true;
 			int Stringnum = 0;
 			int index = 0;
-			char[][] chararray = new char[50][45]; //maximum size is 50 Strings of 45 characters			
+			char[][] chararray = new char[length][40]; //default size is 5000 Strings of 40 characters			
 			while(reading){
 				char check = jsonFileString.charAt(indexOfEndOfString + 2 + index);
 				if(check != '}' && check != ']'){
@@ -283,43 +270,87 @@ public class JSON {
 		}
 		
 		public int[] getInt1DArray(String jsonFileString, int indexOfEndOfString){
-			int[] intarray = new int[parseArray(jsonFileString, indexOfEndOfString).length];
+			int[] intarray = new int[parseArray(jsonFileString, indexOfEndOfString, 5000).length];
 			for(int x = 0; x < intarray.length; x++){ 
-				intarray[x] = Integer.parseInt(parseArray(jsonFileString, indexOfEndOfString)[x]);
+				intarray[x] = Integer.parseInt(parseArray(jsonFileString, indexOfEndOfString, 5000)[x]);
+			}
+			return intarray;
+		}
+		public int[] getInt1DArray(String jsonFileString, int indexOfEndOfString, int length){
+			int[] intarray = new int[parseArray(jsonFileString, indexOfEndOfString, length).length];
+			for(int x = 0; x < intarray.length; x++){ 
+				intarray[x] = Integer.parseInt(parseArray(jsonFileString, indexOfEndOfString, length)[x]);
 			}
 			return intarray;
 		}
 		
 		public byte[] getByte1DArray(String jsonFileString, int indexOfEndOfString){
-			byte[] bytearray = new byte[parseArray(jsonFileString, indexOfEndOfString).length];
+			byte[] bytearray = new byte[parseArray(jsonFileString, indexOfEndOfString, 5000).length];
 			for(int x = 0; x < bytearray.length; x++){ 
-				bytearray[x] = Byte.parseByte(parseArray(jsonFileString, indexOfEndOfString)[x]);
+				bytearray[x] = Byte.parseByte(parseArray(jsonFileString, indexOfEndOfString, 5000)[x]);
+			}
+			return bytearray;
+		}
+		
+		public byte[] getByte1DArray(String jsonFileString, int indexOfEndOfString, int length){
+			byte[] bytearray = new byte[parseArray(jsonFileString, indexOfEndOfString, length).length];
+			for(int x = 0; x < bytearray.length; x++){ 
+				bytearray[x] = Byte.parseByte(parseArray(jsonFileString, indexOfEndOfString, length)[x]);
 			}
 			return bytearray;
 		}
 		
 		public double[] getDouble1DArray(String jsonFileString, int indexOfEndOfString){
-			double[] doublearray = new double[parseArray(jsonFileString, indexOfEndOfString).length]; //using .length because null values can't parse
+			double[] doublearray = new double[parseArray(jsonFileString, indexOfEndOfString,5000).length]; //using .length because null values can't parse
 			for(int x = 0; x < doublearray.length; x++){ 
-				doublearray[x] = Double.parseDouble(parseArray(jsonFileString, indexOfEndOfString)[x]);
+				doublearray[x] = Double.parseDouble(parseArray(jsonFileString, indexOfEndOfString,5000)[x]);
+			}
+			return doublearray;
+		}
+		
+		public double[] getDouble1DArray(String jsonFileString, int indexOfEndOfString, int length){
+			double[] doublearray = new double[parseArray(jsonFileString, indexOfEndOfString, length).length]; //using .length because null values can't parse
+			for(int x = 0; x < doublearray.length; x++){ 
+				doublearray[x] = Double.parseDouble(parseArray(jsonFileString, indexOfEndOfString, length)[x]);
 			}
 			return doublearray;
 		}
 		
 		public float[] getFloat1DArray(String jsonFileString, int indexOfEndOfString){
-			float[] floatarray = new float[parseArray(jsonFileString, indexOfEndOfString).length]; //using .length because null values can't parse
+			float[] floatarray = new float[parseArray(jsonFileString, indexOfEndOfString, 5000).length]; //using .length because null values can't parse
 			for(int x = 0; x < floatarray.length; x++){ 
-				floatarray[x] = Float.parseFloat(parseArray(jsonFileString, indexOfEndOfString)[x]);
+				floatarray[x] = Float.parseFloat(parseArray(jsonFileString, indexOfEndOfString, 5000)[x]);
+			}
+			return floatarray;
+		}
+		
+		public float[] getFloat1DArray(String jsonFileString, int indexOfEndOfString, int length){
+			float[] floatarray = new float[parseArray(jsonFileString, indexOfEndOfString, length).length]; //using .length because null values can't parse
+			for(int x = 0; x < floatarray.length; x++){ 
+				floatarray[x] = Float.parseFloat(parseArray(jsonFileString, indexOfEndOfString, length)[x]);
 			}
 			return floatarray;
 		}
 		
 		public boolean[] getBool1DArray(String jsonFileString, int indexOfEndOfString){
-			boolean[] boolarray = new boolean[parseArray(jsonFileString, indexOfEndOfString).length];
-			String[] check = new String[parseArray(jsonFileString, indexOfEndOfString).length];
+			boolean[] boolarray = new boolean[parseArray(jsonFileString, indexOfEndOfString,5000).length];
+			String[] check = new String[parseArray(jsonFileString, indexOfEndOfString,5000).length];
 			for(int x = 0; x < boolarray.length; x++){ 
-				check[x] = parseArray(jsonFileString, indexOfEndOfString)[x];
-				//System.out.println(check[x]);
+				check[x] = parseArray(jsonFileString, indexOfEndOfString,5000)[x];
+				if(!check[x].equalsIgnoreCase("true") && !check[x].equalsIgnoreCase("false")){
+					System.out.println("Value In Index "+x+" Is False Because It Could Not Be Parsed Correctly");
+				}else{
+					boolarray[x] = Boolean.parseBoolean(check[x]);
+				}
+			}
+			return boolarray;
+		}
+		
+		public boolean[] getBool1DArray(String jsonFileString, int indexOfEndOfString, int length){
+			boolean[] boolarray = new boolean[parseArray(jsonFileString, indexOfEndOfString,length).length];
+			String[] check = new String[parseArray(jsonFileString, indexOfEndOfString,length).length];
+			for(int x = 0; x < boolarray.length; x++){ 
+				check[x] = parseArray(jsonFileString, indexOfEndOfString,length)[x];
 				if(!check[x].equalsIgnoreCase("true") && !check[x].equalsIgnoreCase("false")){
 					System.out.println("Value In Index "+x+" Is False Because It Could Not Be Parsed Correctly");
 				}else{
